@@ -1,0 +1,30 @@
+PODS:
+  - Flutter (1.0.0)
+  - libPusher (1.6.3):
+    - libPusher/Core (= 1.6.3)
+  - libPusher/Core (1.6.3):
+    - SocketRocket (= 0.5.1)
+  - pusher_flutter (0.0.1):
+    - Flutter
+    - libPusher
+  - SocketRocket (0.5.1)
+
+DEPENDENCIES:
+  - Flutter (from `/Users/matthew/flutter/bin/cache/artifacts/engine/ios`)
+  - pusher_flutter (from `/Users/matthew/Projects/AppTree/Web/pusher_flutter/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: /Users/matthew/flutter/bin/cache/artifacts/engine/ios
+  pusher_flutter:
+    :path: /Users/matthew/Projects/AppTree/Web/pusher_flutter/ios
+
+SPEC CHECKSUMS:
+  Flutter: d674e78c937094a75ac71dd77e921e840bea3dbf
+  libPusher: b7fcf16e2db51c37915613652311d66065743ead
+  pusher_flutter: d0eaf2ac3eeed6b0320bad6b829fa6b72469627b
+  SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
+
+PODFILE CHECKSUM: 351e02e34b831289961ec3558a535cbd2c4965d2
+
+COCOAPODS: 1.2.0
