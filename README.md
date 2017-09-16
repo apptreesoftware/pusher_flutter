@@ -2,7 +2,8 @@
 
 A plugin for the Pusher service.
 
-In active development. Not ready for production use. 
+In active development for our internal use case. Once API is stable we will publish a 1.0.0 release.
+Not ready for production use.
 
 ## Getting Started
 
