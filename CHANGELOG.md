@@ -1,3 +1,4 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.1]
 
-* TODO: Describe initial release.
+* Basic support for subscribing to channels, getting events, and getting connectivity info.
+
