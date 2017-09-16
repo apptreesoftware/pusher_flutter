@@ -12,22 +12,27 @@ enum PusherConnectionState {
 }
 
 class PusherFlutter {
-  final String _apiKey;
   MethodChannel _channel;
   EventChannel _connectivityEventChannel;
   EventChannel _messageChannel;
-
+  EventChannel _errorChannel;
 
   /// Creates a [PusherFlutter] with the specified [apiKey] from pusher.
   ///
   /// The [apiKey] may not be null.
-  PusherFlutter(this._apiKey) {
+  PusherFlutter(String apiKey, {String cluster}) {
     _channel = new MethodChannel('plugins.apptreesoftware.com/pusher');
-    _channel.invokeMethod('create', _apiKey);
+    var args = {"api_key": apiKey};
+    if (cluster != null) {
+      args["cluster"] = cluster;
+    }
+    _channel.invokeMethod('create', args);
     _connectivityEventChannel =
         new EventChannel('plugins.apptreesoftware.com/pusher_connection');
     _messageChannel =
         new EventChannel('plugins.apptreesoftware.com/pusher_message');
+    _errorChannel =
+        new EventChannel('plugins.apptreesoftware.com/pusher_error');
   }
 
   /// Connect to the pusher service.
@@ -40,30 +45,40 @@ class PusherFlutter {
     _channel.invokeMethod('disconnect');
   }
 
-  /// Unsubscribe from a channel with the name [channelName]
-  ///
-  /// This will unsubscribe you from all events on that channel.
-  void unsubscribe(String channelName) {
-    _channel.invokeMethod('unsubscribe', channelName);
-  }
-
   /// Subscribe to a channel with the name [channelName] for the event [event]
   ///
   /// Calling this method will cause any messages matching the [event] and [channelName]
   /// provided to be delivered to the [onMessage] method. After calling this you
   /// must listen to the [Stream] returned from [onMessage].
   void subscribe(String channelName, String event) {
-    _channel.invokeMethod('subscribe', {"channel" : channelName, "event" : event});
+    _channel
+        .invokeMethod('subscribe', {"channel": channelName, "event": event});
+  }
+
+  /// Subscribe to the channel [channelName] for each [eventName] in [events]
+  ///
+  /// This method is just for convenience if you need to register multiple events
+  /// for the same channel.
+  void subscribeAll(String channelName, List<String> events) {
+    events.forEach((e) => _channel
+        .invokeMethod('subscribe', {"channel": channelName, "event": e}));
+  }
+
+  /// Unsubscribe from a channel with the name [channelName]
+  ///
+  /// This will un-subscribe you from all events on that channel.
+  void unsubscribe(String channelName) {
+    _channel.invokeMethod('unsubscribe', channelName);
   }
 
   /// Get the [Stream] of [PusherMessage] for the channels and events you've
   /// signed up for.
   ///
-  Stream<PusherMessage> onMessage() {
-    return _messageChannel
-        .receiveBroadcastStream()
-        .map(_toPusherMessage);
-  }
+  Stream<PusherMessage> get onMessage =>
+      _messageChannel.receiveBroadcastStream().map(_toPusherMessage);
+
+  Stream<PusherError> get onError =>
+      _errorChannel.receiveBroadcastStream().map(_toPusherError);
 
   /// Get a [Stream] of [PusherConnectionState] events.
   /// Use this method to get notified about connection-related information.
@@ -94,6 +109,10 @@ class PusherFlutter {
   PusherMessage _toPusherMessage(Map map) {
     return new PusherMessage(map['channel'], map['event'], map['body']);
   }
+
+  PusherError _toPusherError(Map map) {
+    return new PusherError(map['code'], map['message']);
+  }
 }
 
 class PusherMessage {
@@ -102,4 +121,11 @@ class PusherMessage {
   final Map body;
 
   PusherMessage(this.channelName, this.eventName, this.body);
+}
+
+class PusherError {
+  final int code;
+  final String message;
+
+  PusherError(this.code, this.message);
 }

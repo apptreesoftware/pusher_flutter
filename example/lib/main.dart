@@ -12,6 +12,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Map _latestMessage;
+  PusherError _lastError;
   PusherConnectionState _connectionState;
   PusherFlutter pusher = new PusherFlutter("<your_key>");
 
@@ -19,8 +20,14 @@ class _MyAppState extends State<MyApp> {
   initState() {
     super.initState();
     pusher.onConnectivityChanged.listen((state) {
-      setState(() => _connectionState = state);
+      setState(() {
+        _connectionState = state;
+        if (state == PusherConnectionState.connected) {
+          _lastError = null;
+        }
+      });
     });
+    pusher.onError.listen((err) => _lastError = err);
     _connectionState = PusherConnectionState.disconnected;
   }
 
@@ -39,10 +46,29 @@ class _MyAppState extends State<MyApp> {
                 ],
                 mainAxisAlignment: MainAxisAlignment.center,
               ),
-              buildConnectRow(context)
+              buildConnectRow(context),
+              buildErrorRow(context),
             ],
           )),
     );
+  }
+
+  Widget buildErrorRow(BuildContext context) {
+    if (_lastError != null) {
+      return new Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          new Text("Error: ${_lastError.message}")
+        ],
+      );
+    } else {
+      return new Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          new Text("No Errors")
+        ],
+      );
+    }
   }
 
   Widget buildConnectRow(BuildContext context) {
@@ -94,7 +120,9 @@ class _MyAppState extends State<MyApp> {
     pusher.subscribe("test_channel", "test_event");
     pusher.subscribe("test_channel", "test_event2");
 
-    pusher.onMessage().listen((pusher) {
+    pusher.subscribeAll("test_channel", ["test_event3", "test_event4"]);
+
+    pusher.onMessage.listen((pusher) {
       setState(() => _latestMessage = pusher.body);
     });
   }

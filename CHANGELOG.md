@@ -13,3 +13,9 @@
 ## [0.0.4]
 
 * Simplified API for receiving messages. Introduced PusherMessage model.
+
+## [0.0.5]
+
+* onMessage is now a getter instead of a method call
+* Added support for receiving pusher errors
+* Added support for passing in a cluster when creating a Pusher instance.
