@@ -34,24 +34,24 @@ class PusherFlutter {
     _channel.invokeMethod('disconnect');
   }
 
-  void subscribe(String channelName, String eventName) {
-    _channel.invokeMethod(
-        'subscribe', {"channel": channelName, "event": eventName});
-  }
-
   void unsubscribe(String channelName) {
     _channel.invokeMethod('unsubscribe', channelName);
   }
 
-  Stream<Map> onMessage(String channelName, String eventName) => _messageChannel
-      .receiveBroadcastStream()
-      .where((info) =>
-          info['channel'] == channelName && info['event'] == eventName)
-      .map((info) => info['body']);
+  void subscribe(String channelName, String event) {
+    _channel.invokeMethod('subscribe', {"channel" : channelName, "event" : event});
+  }
 
-  Stream<PusherConnectionState> get onConnectivityChanged => _connectivityEventChannel
-      .receiveBroadcastStream()
-      .map(_connectivityStringToState);
+  Stream<PusherMessage> onMessage() {
+    return _messageChannel
+        .receiveBroadcastStream()
+        .map(_toPusherMessage);
+  }
+
+  Stream<PusherConnectionState> get onConnectivityChanged =>
+      _connectivityEventChannel
+          .receiveBroadcastStream()
+          .map(_connectivityStringToState);
 
   PusherConnectionState _connectivityStringToState(String string) {
     switch (string) {
@@ -70,4 +70,16 @@ class PusherFlutter {
     }
     return PusherConnectionState.disconnected;
   }
+
+  PusherMessage _toPusherMessage(Map map) {
+    return new PusherMessage(map['channel'], map['event'], map['body']);
+  }
+}
+
+class PusherMessage {
+  final String channelName;
+  final String eventName;
+  final Map body;
+
+  PusherMessage(this.channelName, this.eventName, this.body);
 }

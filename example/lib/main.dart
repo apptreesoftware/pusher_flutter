@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
     return new MaterialApp(
       home: new Scaffold(
           appBar: new AppBar(
-            title: new Text('Plugin example app'),
+            title: new Text('Pusher example app.'),
           ),
           body: new Column(
             children: <Widget>[
@@ -90,13 +90,18 @@ class _MyAppState extends State<MyApp> {
 
   void connect() {
     pusher.connect();
+
     pusher.subscribe("test_channel", "test_event");
-    pusher.onMessage("test_channel", "test_event").listen((map) {
-      setState(() => _latestMessage = map);
+    pusher.subscribe("test_channel", "test_event2");
+
+    pusher.onMessage().listen((pusher) {
+      setState(() => _latestMessage = pusher.body);
     });
   }
 
   void disconnect() {
+    pusher.unsubscribe("test_channel");
+    pusher.unsubscribe("test_channel2");
     pusher.disconnect();
   }
 }

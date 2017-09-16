@@ -1,6 +1,6 @@
 name: pusher_flutter
 description: A flutter plugin for Pusher (pusher.com)
-version: 0.0.3
+version: 0.0.4
 author: Matthew Smith <matthew@apptree.cloud>
 homepage: https://github.com/apptreesoftware/pusher_flutter
 
