@@ -106,8 +106,12 @@ class PusherFlutter {
     return PusherConnectionState.disconnected;
   }
 
-  PusherMessage _toPusherMessage(Map map) {
-    return new PusherMessage(map['channel'], map['event'], map['body']);
+  PusherMessage _toPusherMessage(dynamic map) {
+    if (map is Map) {
+      var body = new Map<String, dynamic>.from(map['body']);
+      return new PusherMessage(map['channel'], map['event'], body);
+    }
+    return null;
   }
 
   PusherError _toPusherError(Map map) {
@@ -118,7 +122,7 @@ class PusherFlutter {
 class PusherMessage {
   final String channelName;
   final String eventName;
-  final Map body;
+  final Map<String, dynamic> body;
 
   PusherMessage(this.channelName, this.eventName, this.body);
 }
