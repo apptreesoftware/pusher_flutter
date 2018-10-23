@@ -19,3 +19,7 @@
 * onMessage is now a getter instead of a method call
 * Added support for receiving pusher errors
 * Added support for passing in a cluster when creating a Pusher instance.
+
+## [0.0.6]
+
+* update for Dart 2
