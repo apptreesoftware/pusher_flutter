@@ -23,3 +23,7 @@
 ## [0.0.6]
 
 * update for Dart 2
+
+## [0.0.7]
+
+* Fix android build errors after gradle update
