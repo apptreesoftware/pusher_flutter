@@ -70,8 +70,8 @@ class PusherFlutterPlugin() : MethodCallHandler, ConnectionEventListener {
             "disconnect" -> pusher?.disconnect()
             "subscribe" -> {
                 val pusher = this.pusher ?: return
-                val event = call.argument<String>("event")
-                val channelName = call.argument<String>("channel")
+                val event = call.argument<String>("event") ?: throw RuntimeException("Must provide event name")
+                val channelName = call.argument<String>("channel") ?: throw RuntimeException("Must provide channel")
                 var channel = pusher.getChannel(channelName)
                 if (channel == null) {
                     channel = pusher.subscribe(channelName)
