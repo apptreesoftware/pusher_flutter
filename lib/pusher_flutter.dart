@@ -77,8 +77,7 @@ class PusherFlutter {
   Stream<PusherMessage> get onMessage =>
       _messageChannel.receiveBroadcastStream().map(_toPusherMessage);
 
-  Stream<PusherError> get onError =>
-      _errorChannel.receiveBroadcastStream().map(_toPusherError);
+  Stream<PusherError> get onError => _errorChannel.receiveBroadcastStream().map(_toPusherError);
 
   /// Get a [Stream] of [PusherConnectionState] events.
   /// Use this method to get notified about connection-related information.
@@ -88,7 +87,7 @@ class PusherFlutter {
           .receiveBroadcastStream()
           .map(_connectivityStringToState);
 
-  PusherConnectionState _connectivityStringToState(String string) {
+  PusherConnectionState _connectivityStringToState(dynamic string) {    
     switch (string) {
       case 'connecting':
         return PusherConnectionState.connecting;
