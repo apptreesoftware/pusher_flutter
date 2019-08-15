@@ -70,7 +70,7 @@ class PusherFlutter {
   /// Get the [Stream] of [PusherMessage] for the channels and events you've
   /// signed up for.
   ///
-  Stream<dynamic> get onMessage => _messageChannel.receiveBroadcastStream().map(_toPusherMessage);
+  Stream<PusherMessage> get onMessage => _messageChannel.receiveBroadcastStream().map(_toPusherMessage);
 
   Stream<PusherError> get onError => _errorChannel.receiveBroadcastStream().map(_toPusherError);
 
@@ -98,12 +98,11 @@ class PusherFlutter {
     return PusherConnectionState.disconnected;
   }
 
-  dynamic _toPusherMessage(dynamic map) {
-    // if (map is Map) {
-      // var body = Map<String, dynamic>.from(map['body']);
-      // return PusherMessage(map['channel'], map['event'], null);
-    // }
-    return map;
+  PusherMessage _toPusherMessage(dynamic map) {
+    if (map is Map) {
+      return PusherMessage(map['channel'], map['event'], map['body']);
+    }
+    return null;
   }
 
   PusherError _toPusherError(dynamic map) {
@@ -114,7 +113,7 @@ class PusherFlutter {
 class PusherMessage {
   final String channelName;
   final String eventName;
-  final Map<String, dynamic> body;
+  final dynamic jsonBody; // This body can be either JSON object or a list of JSON objects
 
   PusherMessage(this.channelName, this.eventName, this.body);
 }
