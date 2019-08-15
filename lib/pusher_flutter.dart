@@ -115,7 +115,7 @@ class PusherMessage {
   final String eventName;
   final dynamic jsonBody; // This body can be either JSON object or a list of JSON objects
 
-  PusherMessage(this.channelName, this.eventName, this.body);
+  PusherMessage(this.channelName, this.eventName, this.jsonBody);
 }
 
 class PusherError {
