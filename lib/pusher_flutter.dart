@@ -48,8 +48,7 @@ class PusherFlutter {
   /// provided to be delivered to the [onMessage] method. After calling this you
   /// must listen to the [Stream] returned from [onMessage].
   void subscribe(String channelName, String event) {
-    _channel
-        .invokeMethod('subscribe', {"channel": channelName, "event": event});
+    _channel.invokeMethod('subscribe', {"channel": channelName, "event": event});
   }
 
   /// Subscribe to the channel [channelName] for each [eventName] in [events]
@@ -71,18 +70,15 @@ class PusherFlutter {
   /// Get the [Stream] of [PusherMessage] for the channels and events you've
   /// signed up for.
   ///
-  Stream<PusherMessage> get onMessage =>
-      _messageChannel.receiveBroadcastStream().map(_toPusherMessage);
+  Stream<dynamic> get onMessage => _messageChannel.receiveBroadcastStream().map(_toPusherMessage);
 
   Stream<PusherError> get onError => _errorChannel.receiveBroadcastStream().map(_toPusherError);
 
   /// Get a [Stream] of [PusherConnectionState] events.
   /// Use this method to get notified about connection-related information.
   ///
-  Stream<PusherConnectionState> get onConnectivityChanged =>
-      _connectivityEventChannel
-          .receiveBroadcastStream()
-          .map(_connectivityStringToState);
+  Stream<PusherConnectionState> get onConnectivityChanged => 
+  _connectivityEventChannel.receiveBroadcastStream().map(_connectivityStringToState);
 
   PusherConnectionState _connectivityStringToState(dynamic string) {    
     switch (string) {
@@ -102,12 +98,12 @@ class PusherFlutter {
     return PusherConnectionState.disconnected;
   }
 
-  PusherMessage _toPusherMessage(dynamic map) {
-    if (map is Map) {
-      var body = Map<String, dynamic>.from(map['body']);
-      return PusherMessage(map['channel'], map['event'], body);
-    }
-    return null;
+  dynamic _toPusherMessage(dynamic map) {
+    // if (map is Map) {
+      // var body = Map<String, dynamic>.from(map['body']);
+      // return PusherMessage(map['channel'], map['event'], null);
+    // }
+    return map;
   }
 
   PusherError _toPusherError(dynamic map) {
