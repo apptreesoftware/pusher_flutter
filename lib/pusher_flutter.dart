@@ -21,18 +21,15 @@ class PusherFlutter {
   ///
   /// The [apiKey] may not be null.
   PusherFlutter(String apiKey, {String cluster}) {
-    _channel = new MethodChannel('plugins.apptreesoftware.com/pusher');
+    _channel = MethodChannel('plugins.apptreesoftware.com/pusher');
     var args = {"api_key": apiKey};
     if (cluster != null) {
       args["cluster"] = cluster;
     }
     _channel.invokeMethod('create', args);
-    _connectivityEventChannel =
-        new EventChannel('plugins.apptreesoftware.com/pusher_connection');
-    _messageChannel =
-        new EventChannel('plugins.apptreesoftware.com/pusher_message');
-    _errorChannel =
-        new EventChannel('plugins.apptreesoftware.com/pusher_error');
+    _connectivityEventChannel = EventChannel('plugins.apptreesoftware.com/pusher_connection');
+    _messageChannel = EventChannel('plugins.apptreesoftware.com/pusher_message');
+    _errorChannel = EventChannel('plugins.apptreesoftware.com/pusher_error');
   }
 
   /// Connect to the pusher service.
@@ -107,14 +104,14 @@ class PusherFlutter {
 
   PusherMessage _toPusherMessage(dynamic map) {
     if (map is Map) {
-      var body = new Map<String, dynamic>.from(map['body']);
-      return new PusherMessage(map['channel'], map['event'], body);
+      var body = Map<String, dynamic>.from(map['body']);
+      return PusherMessage(map['channel'], map['event'], body);
     }
     return null;
   }
 
-  PusherError _toPusherError(Map map) {
-    return new PusherError(map['code'], map['message']);
+  PusherError _toPusherError(dynamic map) {
+    return PusherError(map['code'], map['message']);
   }
 }
 
