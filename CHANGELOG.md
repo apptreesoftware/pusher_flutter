@@ -27,3 +27,7 @@
 ## [0.0.7]
 
 * Fix android build errors after gradle update
+
+## [0.0.8]
+
+* Fix crash on Android related to this [issue](https://github.com/flutter/flutter/issues/34993)

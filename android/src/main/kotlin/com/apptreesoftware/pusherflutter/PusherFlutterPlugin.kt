@@ -1,6 +1,7 @@
 package com.apptreesoftware.pusherflutter
 
-import android.app.Activity
+import android.os.Handler
+import android.os.Looper
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.channel.Channel
@@ -14,10 +15,8 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
-import org.json.JSONObject
-import java.lang.Exception
 import org.json.JSONArray
-
+import org.json.JSONObject
 
 
 class PusherFlutterPlugin() : MethodCallHandler, ConnectionEventListener {
@@ -106,9 +105,11 @@ class MessageStreamHandler : EventChannel.StreamHandler {
     fun send(channel: String, event: String, data: Any) {
         val json = JSONObject(data as String)
         val map = jsonToMap(json)
-        eventSink?.success(mapOf("channel" to channel,
-                                 "event" to event,
-                                 "body" to map))
+        Handler(Looper.getMainLooper()).post {
+            eventSink?.success(mapOf("channel" to channel,
+                    "event" to event,
+                    "body" to map))
+        }
     }
 
     override fun onCancel(p0: Any?) {
@@ -124,7 +125,10 @@ class ErrorStreamHandler : EventChannel.StreamHandler {
 
     fun send(code : String, message : String) {
         val errCode = try { code.toInt() } catch (e : NumberFormatException) { 0 }
-        eventSink?.success(mapOf("code" to errCode, "message" to message))
+        Handler(Looper.getMainLooper()).post {
+            eventSink?.success(mapOf("code" to errCode, "message" to message))
+        }
+
     }
 
     override fun onCancel(p0: Any?) {
@@ -139,7 +143,9 @@ class ConnectionStreamHandler : EventChannel.StreamHandler {
     }
 
     fun sendState(state: ConnectionState) {
-        eventSink?.success(state.toString().toLowerCase())
+        Handler(Looper.getMainLooper()).post {
+            eventSink?.success(state.toString().toLowerCase())
+        }
     }
 
     override fun onCancel(p0: Any?) {
