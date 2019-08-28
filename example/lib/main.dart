@@ -124,7 +124,7 @@ class _MyAppState extends State<MyApp> {
     //pusher.subscribeAll("test_channel", ["test_event3", "test_event4"]);
 
     pusher.onMessage.listen((pusher) {
-      setState(() => _latestMessage = pusher.body);
+      setState(() => _latestMessage = pusher.jsonBody);
     });
   }
 
