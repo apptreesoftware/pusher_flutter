@@ -64,9 +64,16 @@ class PusherFlutterPlugin() : MethodCallHandler, ConnectionEventListener {
                     pusherOptions.setCluster(cluster)
                 }
                 pusher = Pusher(apiKey, pusherOptions)
+                result.success(null)
             }
-            "connect" -> pusher?.connect(this, ConnectionState.ALL)
-            "disconnect" -> pusher?.disconnect()
+            "connect" -> {
+                pusher?.connect(this, ConnectionState.ALL)
+                result.success(null)
+            }
+            "disconnect" -> {
+                pusher?.disconnect()
+                result.success(null)
+            }
             "subscribe" -> {
                 val pusher = this.pusher ?: return
                 val event = call.argument<String>("event") ?: throw RuntimeException("Must provide event name")
