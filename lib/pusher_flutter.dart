@@ -21,18 +21,15 @@ class PusherFlutter {
   ///
   /// The [apiKey] may not be null.
   PusherFlutter(String apiKey, {String cluster}) {
-    _channel = new MethodChannel('plugins.apptreesoftware.com/pusher');
+    _channel = MethodChannel('plugins.apptreesoftware.com/pusher');
     var args = {"api_key": apiKey};
     if (cluster != null) {
       args["cluster"] = cluster;
     }
     _channel.invokeMethod('create', args);
-    _connectivityEventChannel =
-        new EventChannel('plugins.apptreesoftware.com/pusher_connection');
-    _messageChannel =
-        new EventChannel('plugins.apptreesoftware.com/pusher_message');
-    _errorChannel =
-        new EventChannel('plugins.apptreesoftware.com/pusher_error');
+    _connectivityEventChannel = EventChannel('plugins.apptreesoftware.com/pusher_connection');
+    _messageChannel = EventChannel('plugins.apptreesoftware.com/pusher_message');
+    _errorChannel = EventChannel('plugins.apptreesoftware.com/pusher_error');
   }
 
   /// Connect to the pusher service.
@@ -51,8 +48,7 @@ class PusherFlutter {
   /// provided to be delivered to the [onMessage] method. After calling this you
   /// must listen to the [Stream] returned from [onMessage].
   void subscribe(String channelName, String event) {
-    _channel
-        .invokeMethod('subscribe', {"channel": channelName, "event": event});
+    _channel.invokeMethod('subscribe', {"channel": channelName, "event": event});
   }
 
   /// Subscribe to the channel [channelName] for each [eventName] in [events]
@@ -74,21 +70,17 @@ class PusherFlutter {
   /// Get the [Stream] of [PusherMessage] for the channels and events you've
   /// signed up for.
   ///
-  Stream<PusherMessage> get onMessage =>
-      _messageChannel.receiveBroadcastStream().map(_toPusherMessage);
+  Stream<PusherMessage> get onMessage => _messageChannel.receiveBroadcastStream().map(_toPusherMessage);
 
-  Stream<PusherError> get onError =>
-      _errorChannel.receiveBroadcastStream().map(_toPusherError);
+  Stream<PusherError> get onError => _errorChannel.receiveBroadcastStream().map(_toPusherError);
 
   /// Get a [Stream] of [PusherConnectionState] events.
   /// Use this method to get notified about connection-related information.
   ///
-  Stream<PusherConnectionState> get onConnectivityChanged =>
-      _connectivityEventChannel
-          .receiveBroadcastStream()
-          .map(_connectivityStringToState);
+  Stream<PusherConnectionState> get onConnectivityChanged => 
+  _connectivityEventChannel.receiveBroadcastStream().map(_connectivityStringToState);
 
-  PusherConnectionState _connectivityStringToState(String string) {
+  PusherConnectionState _connectivityStringToState(dynamic string) {    
     switch (string) {
       case 'connecting':
         return PusherConnectionState.connecting;
@@ -108,23 +100,22 @@ class PusherFlutter {
 
   PusherMessage _toPusherMessage(dynamic map) {
     if (map is Map) {
-      var body = new Map<String, dynamic>.from(map['body']);
-      return new PusherMessage(map['channel'], map['event'], body);
+      return PusherMessage(map['channel'], map['event'], map['body']);
     }
     return null;
   }
 
-  PusherError _toPusherError(Map map) {
-    return new PusherError(map['code'], map['message']);
+  PusherError _toPusherError(dynamic map) {
+    return PusherError(map['code'], map['message']);
   }
 }
 
 class PusherMessage {
   final String channelName;
   final String eventName;
-  final Map<String, dynamic> body;
+  final dynamic jsonBody; // This body can be either JSON object or a list of JSON objects
 
-  PusherMessage(this.channelName, this.eventName, this.body);
+  PusherMessage(this.channelName, this.eventName, this.jsonBody);
 }
 
 class PusherError {

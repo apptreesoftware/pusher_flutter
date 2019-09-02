@@ -14,7 +14,9 @@ class _MyAppState extends State<MyApp> {
   Map _latestMessage;
   PusherError _lastError;
   PusherConnectionState _connectionState;
-  PusherFlutter pusher = new PusherFlutter("<your_key>");
+
+  // Ao instanciar passar o 
+  PusherFlutter pusher = new PusherFlutter("<api-key>", cluster: "<cluster>");
 
   @override
   initState() {
@@ -27,7 +29,7 @@ class _MyAppState extends State<MyApp> {
         }
       });
     });
-    pusher.onError.listen((err) => _lastError = err);
+    //pusher.onError.listen((err) => _lastError = err);
     _connectionState = PusherConnectionState.disconnected;
   }
 
@@ -117,19 +119,17 @@ class _MyAppState extends State<MyApp> {
   void connect() {
     pusher.connect();
 
-    pusher.subscribe("test_channel", "test_event");
-    pusher.subscribe("test_channel", "test_event2");
+    pusher.subscribe("my-channel", "my-event");
 
-    pusher.subscribeAll("test_channel", ["test_event3", "test_event4"]);
+    //pusher.subscribeAll("test_channel", ["test_event3", "test_event4"]);
 
     pusher.onMessage.listen((pusher) {
-      setState(() => _latestMessage = pusher.body);
+      setState(() => _latestMessage = pusher.jsonBody);
     });
   }
 
   void disconnect() {
-    pusher.unsubscribe("test_channel");
-    pusher.unsubscribe("test_channel2");
+    pusher.unsubscribe("my-channel");
     pusher.disconnect();
   }
 }
