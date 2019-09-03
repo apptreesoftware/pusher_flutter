@@ -74,7 +74,11 @@
     if ([call.method isEqualToString:@"create"]) {
         NSString *apiKey = call.arguments[@"api_key"];
         NSString *cluster = call.arguments[@"cluster"];
-        self.pusher = [PTPusher pusherWithKey:apiKey delegate:self encrypted:YES cluster:cluster];
+        if ([cluster length] == 0) {
+            self.pusher = [PTPusher pusherWithKey:apiKey delegate:self encrypted:YES];
+        } else {
+            self.pusher = [PTPusher pusherWithKey:apiKey delegate:self encrypted:YES cluster:cluster];
+        }
         result(@(YES));
     } else if ([call.method isEqualToString:@"connect"]) {
         [self.pusher connect];
@@ -89,7 +93,7 @@
         if (!channel) {
             channel = [self.pusher subscribeToChannelNamed:channelName];
         }
-        [self listenToChannel:channel forEvent:event];
+        [channel bindToEventNamed:event target:self action:@selector(forwardEvent:)];
         result(@(YES));
     } else if ([call.method isEqualToString:@"unsubscribe"]) {
         PTPusherChannel *channel = [self.pusher channelNamed:call.arguments];
@@ -102,10 +106,8 @@
     result(FlutterMethodNotImplemented);
 }
 
-- (void)listenToChannel:(PTPusherChannel *)channel forEvent:(NSString *)event {
-    [channel bindToEventNamed:event handleWithBlock:^(PTPusherEvent *e) {
-        [_messageStreamHandler send:channel.name event:event body:e.data];
-    }];
+- (void)forwardEvent:(PTPusherEvent *)event {
+    [_messageStreamHandler send:event];
 }
 
 @end
@@ -119,9 +121,9 @@
     return nil;
 }
 
-- (void)send:(NSString *)channel event:(NSString *)event body:(id)body {
+- (void)send:(PTPusherEvent *)event {
     if (_eventSink) {
-        NSDictionary *dictionary = @{@"channel": channel, @"event": event, @"body": body};
+        NSDictionary *dictionary = @{@"channel": event.channel, @"event": event.name, @"body": event.data};
         _eventSink(dictionary);
     }
 }

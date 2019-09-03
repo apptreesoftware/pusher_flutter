@@ -13,7 +13,7 @@
 @end
 
 @interface MessageStreamHandler : NSObject<FlutterStreamHandler>
-- (void)send:(NSString *)channel event:(NSString *)event body:(NSDictionary *)body;
+- (void)send:(PTPusherEvent *)event;
 @end
 
 @interface PusherConnectionStateStream : NSObject <FlutterStreamHandler>
