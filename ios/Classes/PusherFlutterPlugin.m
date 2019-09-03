@@ -74,7 +74,7 @@
     if ([call.method isEqualToString:@"create"]) {
         NSString *apiKey = call.arguments[@"api_key"];
         NSString *cluster = call.arguments[@"cluster"];
-        if ([cluster isEqual:nil] || [cluster isEqualToString:@""]) {
+        if ([cluster length] == 0) {
             self.pusher = [PTPusher pusherWithKey:apiKey delegate:self encrypted:YES];
         } else {
             self.pusher = [PTPusher pusherWithKey:apiKey delegate:self encrypted:YES cluster:cluster];
